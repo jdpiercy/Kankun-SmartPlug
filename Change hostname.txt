@@ -1,0 +1,3 @@
+uci set system.@system[0].hostname='<<Plug_Name>>'
+uci commit system
+/etc/init.d/system reload
