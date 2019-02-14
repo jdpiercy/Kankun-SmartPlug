@@ -16,6 +16,8 @@ config wifi-iface
 
 config interface 'wwan'
         option proto 'dhcp'
+        option hostname '<<Plug_Name>>'
+
 
 or 
 
@@ -25,3 +27,4 @@ config interface 'wwan'
         option netmask '255.255.255.0'
         option gateway '192.168.1.1'
         option dns '8.8.8.8'
+        option hostname '<<Plug_Name>>'
