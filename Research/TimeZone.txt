@@ -2,4 +2,14 @@ edit
 
 /etc/TZ
 
+Confusingly, the offset in the TZ value specifies the time value you must add to the local time to get a UTC value, so this is positive if the local time zone is west of the Prime Meridian and negative if it is east. As a result, TZ must be set to GMT-8 for a timezone that is GMT+8.
+
 +7 offset for MST
+
+
+/etc/init.d/boot
+change lines 20-22
+
+	config_get timezone "$cfg" timezone 'UTC'
+	# echo "$timezone" > /tmp/TZ
+	echo CST+7 > /etc/TZ
