@@ -1,3 +1,7 @@
+/etc/config/wireless
+
+
+
 config wifi-iface
         option device   radio0
         option network  wwan
