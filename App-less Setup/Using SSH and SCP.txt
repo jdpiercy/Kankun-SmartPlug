@@ -5,3 +5,6 @@ Default IP address of smart plugs are 192.168.10.253
 Using default username and password - see file
 SSH using Putty or similar program to upgrade, install and configure
 SCP using WinSCP or similar program to transfer files to smart plug for firmware upgrade, opkg install, relay.cgi
+
+Warning:
+You should always upload files to /tmp to prevent filling the file systems and bricking the plug. All files in /tmp are in memory and removed on reboot / reset of the plug

@@ -5,5 +5,10 @@ See using SSH and SCP and Default Passwords
 SCP the latest firmware file to plug
 SSH login to the plug
 
+cd /tmp
+
 Run the following command:
 
+sysupgrade kkeps-3.5.bin
+
+The plug will upgrade the firmware and reboot
