@@ -2,6 +2,6 @@ Plug in Smart Plug
 Reset it by pressing buttin down for 10 secs
 Connect your PC/Mac to OPK3 Wifi Network
 Default IP address of smart plugs are 192.168.10.253
-Using default username and password - see file
+Using default username and password
 SSH using Putty or similar program to upgrade, install and configure
 SCP using WinSCP or similar program to transfer files to smart plug for firmware upgrade, opkg install, relay.cgi
