@@ -9,6 +9,16 @@ tar xz -C / -f /tmp/opkg-rc3.tar.gz
 
 Then update it, like so:
 opkg update
+Note: this will fail due to rc3 on plug versus full release, change
+
+/etc/opkg.conf
+
+first line to:
+
+src/gz barrier_breaker http://archive.openwrt.org/barrier_breaker/14.07/ar71xx/generic/packages/packages
+
+then re-run opkg update
+
 
 Now you can install things with:
 opkg install {package name}
