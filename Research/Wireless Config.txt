@@ -1,0 +1,7 @@
+config wifi-iface
+        option device   radio0
+        option network  wwan
+        option mode     sta
+        option ssid     <<YOUR_SSID>>
+        option encryption psk2
+        option key      <<YOUR_PASSWORD>>
