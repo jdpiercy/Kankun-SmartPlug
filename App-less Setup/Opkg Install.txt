@@ -1,0 +1,14 @@
+Download it from here
+
+Then copy it onto the device, like so:
+scp opkg-rc3.tar.gz root@192.168.10.253:/root/opkg-rc3.tar.gz
+
+
+Then SSH into your device and unpack it, like so:
+tar xz -C / -f /root/opkg-rc3.tar.gz
+
+Then update it, like so:
+opkg update
+
+Now you can install things with:
+opkg install {package name}
