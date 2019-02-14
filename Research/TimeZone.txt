@@ -1,0 +1,5 @@
+edit 
+
+/etc/TZ
+
++7 offset for MST
