@@ -11,7 +11,17 @@ config wifi-iface
         option encryption psk2
         option key      <<YOUR_PASSWORD>>
 
+
 /etc/config/network
 
 config interface 'wwan'
         option proto 'dhcp'
+
+or 
+
+config interface 'wwan'
+        option proto 'static'
+        option ipaddr '192.168.1.100'
+        option netmask '255.255.255.0'
+        option gateway '192.168.1.1'
+        option dns '8.8.8.8'
