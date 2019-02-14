@@ -1,7 +1,5 @@
 /etc/config/wireless
 
-
-
 config wifi-iface
         option device   radio0
         option network  wwan
@@ -9,3 +7,8 @@ config wifi-iface
         option ssid     <<YOUR_SSID>>
         option encryption psk2
         option key      <<YOUR_PASSWORD>>
+
+/etc/config/network
+
+config interface 'wwan'
+        option proto 'dhcp'
