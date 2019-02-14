@@ -1,0 +1,9 @@
+This should be the first step in setting these plugs up as all customization will be lost once the new firmware is applied. (Atleast until I provide my custom firmware and applications)
+
+See using SSH and SCP and Default Passwords
+
+SCP the latest firmware file to plug
+SSH login to the plug
+
+Run the following command:
+
