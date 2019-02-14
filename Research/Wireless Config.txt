@@ -1,5 +1,8 @@
 /etc/config/wireless
 
+ option country CA  <-- change this to your country code, default is CN for China
+
+
 config wifi-iface
         option device   radio0
         option network  wwan
