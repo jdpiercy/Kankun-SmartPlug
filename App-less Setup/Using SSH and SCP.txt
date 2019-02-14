@@ -8,3 +8,4 @@ SCP using WinSCP or similar program to transfer files to smart plug for firmware
 
 Warning:
 >>>>>>> 1de4f85d4ca30daddf2b73208fb51f5fb4699902
+
