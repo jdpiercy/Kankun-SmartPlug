@@ -1,0 +1,52 @@
+body {
+  font-family: 'Signika', sans-serif;
+  background: #ddd repeat top left;
+  font-weight: 600;
+  font-size: 20px;
+  color: #333;
+  -webkit-font-smoothing: antialiased;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  margin: 8px 32px;
+}
+
+ul {
+  list-style: none;
+  padding-left: 8px;
+}
+
+li {
+  padding: 4px 0;
+}
+
+#switches li span {
+  cursor: pointer;
+}
+
+#switches li i {
+  background-color: #888;
+  border: #666 1px solid;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+#switches li.power-on i {
+  color: #0f0;
+  text-shadow: 0 0 2px #0f0;
+}
+
+#switches li.power-off i {
+  color: #800;
+}
+
+#add-switch {
+  color: #0a0;
+}
+
+#delete-switch {
+  color: #a00;
+}
+
+a.help, a.help:link, a.help:visited {
+  color: #bbb;
+}
