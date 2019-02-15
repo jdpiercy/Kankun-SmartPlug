@@ -1,0 +1,134 @@
+Joe Sebastian's Setup
+
+This is messy, but it is my notes from working on the kankun smart socket. I have not implemented editing the cron file with a web page yet! I want to if I ever have time...
+Bought and started using 7/2016
+it is currently 11/2016 and I am still using this. I have never downloaded or used the KanKun app. I use PuTTY and WinSCP to connect to the plug from my windows machine. 
+
+
+Right out of the box, or after a factory reset this is what I did. No need to mess with trying to get the app working, etc.
+
+1. plug into power.
+2. connect your PC to the WiFi SSID that the plug creates.
+3. use putty to connect via ssh to 10.168.10.253. Use "root" for the username, and "p9z34c" for pw
+
+you can now turn on and off the relay by typing the line below into the command line in Putty:
+
+Turning the smart plug off:  echo 0 > /sys/class/leds/tp-link:blue:relay/brightness
+
+Turning the smart plug on:  echo 1 > /sys/class/leds/tp-link:blue:relay/brightness
+
+
+4. use vi  on \etc\rc.local and comment out the following lines by putting in a # at the beginning of the line like shown. This will prevent the plug from communicating with other things 
+
+like the manufacturers servers, the smartphone apps, etc.
+#/sbin/kkeps_on &
+#/sbin/kkeps_off &
+#/sbin/kkeps_seekwifi &
+#/sbin/kkeps_reconect &
+
+5. get the plug on your WiFi network:
+	Use Vi or other means and add the following lines to /etc/config/network
+
+config interface 'wwan'
+        option proto 'static'
+        option ipaddr '192.168.1.51'
+        option netmask '255.255.255.0'
+        option gateway '192.168.1.1'
+        option dns '192.168.1.1'
+
+	Use Vi or other means to edit the the following lines in /etc/config/wireless
+	where you see "YOUR SSID" put the SSID of the WiFi you want it to connect to.
+	where you see "YOUR KEY" put the WiFi password or key.
+
+config wifi-iface
+        option device   radio0
+        option network  wwan
+        option mode     sta
+        option ssid     "YOUR SSID"
+        option key      "YOUR KEY"
+        option encryption psk
+
+I would reboot and be sure the plug connects, etc.
+Now we should shut off the DHCP and DNS server in the plug.
+You will have to be logged into the plug and type dnsmasq disable
+
+
+
+if you want the plug to schedule turning the socket power on and off then you will need the time synchronized and the cron deamon running.
+type the following 2 lines:
+/etc/init.d/cron enable
+mkdir -p /var/spool/cron
+
+
+to have the schedule work you need to type:
+crontab -e
+This will cron in VI and editing the crontab file.
+the commands below turn the light on at 6pm and off at 11:30
+
+00 18 * * * echo 1 > /sys/class/leds/tp-link:blue:relay/brightness
+30 23 * * * echo 0 > /sys/class/leds/tp-link:blue:relay/brightness
+
+
+
+I edited /etc/config/system:
+See Below:
+I changed the hostname and the time Zone. It has daylight savings time programmed in so we will see if it works.
+I made the blue light do a little blink every 10 seconds to see if it was running, but not leave on as some people complained that it was bright and I dont want to draw attention to the 
+
+plug as kids follow the blue light then mess with it!!!
+
+
+config system
+	option hostname 'FamilyRoomLamp'
+	option zonename 'Eastern Time'
+	option timezone 'EST5EDT,M3.2.0,M11.1.0'
+	option conloglevel '8'
+	option cronloglevel '8'
+
+config timeserver 'ntp'
+	list server '0.openwrt.pool.ntp.org'
+	list server '1.openwrt.pool.ntp.org'
+	list server '2.openwrt.pool.ntp.org'
+	list server '3.openwrt.pool.ntp.org'
+	option enable_server '0'
+
+config restorefactory
+	option button 'reset'
+	option action 'pressed'
+	option timeout '2'
+
+config led
+	option name 'flashing'
+	option sysfs 'tp-link:blue:config'
+	option trigger 'timer'
+	option delayon '10000'
+	option delayoff '10'
+
+config led
+	option name 'Relay'
+	option sysfs 'tp-link:blue:relay'
+	option trigger 'none'
+	option default '1'
+
+
+
+12:18 PM 11/3/2016
+Wanted to reboot the plug if it lost connection to the router. so I put a file called conncheck in the /root/ dir ( I made it executable by changing properties in winSCP) The file contains: 
+ROUTER=192.168.1.1
+ping -c 3 $ROUTER > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+  reboot
+fi
+
+
+I also added the first line below to the crontab file:
+*/10 * * * * /root/conncheck
+00 18 * * * echo 1 > /sys/class/leds/tp-link:blue:relay/brightness
+30 23 * * * echo 0 > /sys/class/leds/tp-link:blue:relay/brightness
+
+
+Thought about  doing this instead of a reboot to avoid the relay turning off if it is on during the reboot, but I never
+ did...
+
+/etc/init.d/network restart
