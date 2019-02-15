@@ -1,0 +1,20 @@
+take a look at this file:
+
+/etc/config/system
+
+the flashing led section of this file for yours probably looks something like this:
+
+config led
+	option name 'flashing'
+	option sysfs 'tp-link:blue:config'
+	option trigger 'timer'
+	option delayon '200'
+	option delayoff '200'
+
+edit that section to this:
+
+config led
+	option name 'flashing'
+	option sysfs 'tp-link:blue:config'
+	option trigger 'none'
+	option default '1'
