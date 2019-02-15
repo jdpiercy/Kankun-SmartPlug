@@ -1,0 +1,4 @@
+SCP into plug
+create folder under /www called cgi-bin
+upload relay.cgi to cgi-bin
+change permissions to executable (755)
