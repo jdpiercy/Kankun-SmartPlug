@@ -9,8 +9,6 @@ The manufacturer's software is buggy at best and uses Chinese servers to relay c
 
 <ul>
 Konstantin Dondoshanskiy
-
 lukeb-uk/kankun-setup
-
 homedash/kankun-json
 </ul>
