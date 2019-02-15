@@ -1,0 +1,23 @@
+Thanks to Mark Neil Aves' suggestion to use an MQTT client instead of HTTP to control the Kankun, I'm testing this primitive MQTT subscribe wrapper. It requires the mosquitto-client-nossl package. If you don't know about MQTT, this probably isn't for you.
+
+#!/bin/sh
+BROKER="your.mqtt.broker.ip.address"
+TOPIC="esp/relay/1"
+RELAY="/sys/class/leds/tp-link:blue:relay/brightness"
+RELAYON=1
+RELAYOFF=0
+
+mosquitto_sub -h "$BROKER" -t "$TOPIC" | while read line
+do
+    line=`echo $line | tr [A-Z] [a-z]`
+    echo "message = $line"
+    if [ "$line" == "on" ]; then
+        echo $RELAYON >> $RELAY
+        echo "message = on"
+    elif [ "$line" == "off" ]; then
+        echo $RELAYOFF >> $RELAY
+        echo "message = off"
+    else
+    echo "message incorrect"
+    fi
+done
