@@ -1,0 +1,4 @@
+uci set system.@led[1].default=1
+uci commit system
+
+The plug will boot up switched on. I did this on the plug I have connected to my cablemodem.
