@@ -1,0 +1,12 @@
+Configure crontab. By default crontab is de-activated. Follow these instructions to activate it:
+$sh /etc/init.d/cron start
+$sh /etc/init.d/cron enable
+$mkdir -p /var/spool/cron
+2- Add a task to your crontab every 1 minute
+$crontab -e
+paste the following line:
+* * * * * /sbin/check_host 192.168.1.122
+3- Check your crontab record and confirm line is added
+$crontab -l
+4- reboot your system
+$reboot
