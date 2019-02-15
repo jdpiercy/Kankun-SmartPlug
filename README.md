@@ -17,3 +17,4 @@ The manufacturer's software is buggy at best and uses Chinese servers to relay c
 <li>Xuong Tong
 <li>Minas Dasygenis
 <li>Marco Trevino
+<li>Barry Hubbard
