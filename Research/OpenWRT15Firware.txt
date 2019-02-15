@@ -1,0 +1,109 @@
+xuong tong
+
+I have managed to reflash my Kankun with Openwrt CC 15.05.1.  I used the imagebuilder for TP703n with  wireless file set to enable. You must do this or risk of bricking the device as standard Openwrt set wifi  to disable.  To activate the relay, set in your /etc/rc.local
+
+echo 26 > /sys/class/gpio/export
+echo out > /sys/class/gpio/gpio26/direction
+echo 1 > /sys/devices/virtual/gpio/gpio26/value
+#echo 0 > /sys/devices/virtual/gpio/gpio26/value
+
+Instructions to build image:
+
+Get the imagebuilder from https://downloads.openwrt.org/chaos_calmer/15.05.1/ar71xx/generic/.
+You will need to ubuntu/linux mint OS 64bits to build the image.
+extract the tarball file.
+how to build the image
+https://fixmynix.com/build-openwrt-minimal-image-custom-firmware/
+https://wiki.openwrt.org/doc/howto/obtain.firmware.generate
+
+sudo apt-get install build-essential
+
+mkdir openwrt && cd openwrt
+
+wget https://downloads.openwrt.org/chaos_calmer/15.05.1/ar71xx/generic/OpenWrt-ImageBuilder-15.05.1-ar71xx-generic.Linux-x86_64.tar.bz2
+
+tar -xvjf OpenWrt-ImageBuilder-15.05.1-ar71xx-generic.Linux-x86_64.tar.bz2
+
+cd ./OpenWrt-ImageBuilder-15.05.1-ar71xx-generic.Linux-x86_64
+
+### put enabled wireless file
+mkdir -p files/etc/config
+
+edit files/etc/config/wireless
+
+$vi files/etc/config/wireless
+config wifi-device  radio0
+    option type     mac80211
+    option channel  11
+    option hwmode    11g
+    option path    'platform/ar933x_wmac'
+    option htmode    HT20
+
+
+config wifi-iface
+    option device   radio0
+    option network  lan
+    option mode     ap
+    option ssid     OpenWrt
+    option encryption none
+
+###build image
+make image PROFILE=TLWR703 FILES=files/ PACKAGES=\
+  "-libiwinfo-lua -liblua -libubus-lua -libuci-lua -lua \
+   -luci -luci-app-firewall -luci-base -luci-lib-ip \
+   -luci-lib-nixio -luci-mod-admin-full -luci-proto-ipv6 \
+   -luci-proto-ppp -luci-theme-bootstrap -uhttpd -uhttpd-mod-ubus"
+
+
+#### image in
+OpenWrt-ImageBuilder-15.05.1-ar71xx-generic.Linux-x86_64/bin/ar71xx $ ls
+md5sums
+openwrt-15.05.1-ar71xx-generic-root.squashfs
+openwrt-15.05.1-ar71xx-generic-root.squashfs-64k
+openwrt-15.05.1-ar71xx-generic-tl-wr703n-v1-squashfs-factory.bin
+openwrt-15.05.1-ar71xx-generic-tl-wr703n-v1-squashfs-sysupgrade.bin
+openwrt-15.05.1-ar71xx-generic-uImage-gzip.bin
+openwrt-15.05.1-ar71xx-generic-uImage-lzma.bin
+openwrt-15.05.1-ar71xx-generic-vmlinux.bin
+openwrt-15.05.1-ar71xx-generic-vmlinux.elf
+openwrt-15.05.1-ar71xx-generic-vmlinux.gz
+openwrt-15.05.1-ar71xx-generic-vmlinux.lzma
+openwrt-15.05.1-ar71xx-generic-vmlinux-lzma.elf
+sha256sums
+
+### use openwrt-15.05.1-ar71xx-generic-tl-wr703n-v1-squashfs-sysupgrade.bin from above
+
+
+#### backup/restore KK image and/or openwrt image
+cat /dev/mtd5 >/tmp/backup.bin
+Download that file to your computer.
+
+That's it. You got the full backup of the firmware (root+rootfs_data).
+To restore? Transfer it to /tmp in router.
+sysupgrade -v -n backup.bin
+
+Hope this get you started
+
+LUCI
+
+The above command does not build luci, If you like luci built. Run
+
+make image PROFILE=TLWR703 FILES=files/
+
+Standard build with luci (taken on tp703n)
+
+root@repeater:~# df -kh
+Filesystem                Size      Used Available Use% Mounted on
+rootfs                  512.0K    376.0K    136.0K  73% /
+
+KK imagebuild without luci
+
+root@plug1:~# df -kh
+Filesystem                Size      Used Available Use% Mounted on
+rootfs                  832.0K    396.0K    436.0K  48% /
+
+
+KK/TP703n only have 1 radio.  This means if the access point is not available/or out of range, you also loose connectivity to the KK device.  I have mine setup like a pc/android client.   On first boot, it scans for access point and if it matches a profile which is already setup, it will connect. If it fails to connect/find an access point, it will default itself to become an access point so you can login and create an access point profile.  Using this method, I have no need to go into reset/failsafe mode.  You cannot use luci for this. 
+
+When comparing the throughout of KK with tp703n on repeater mode.
+The TP did 10M and KK 5M on my dsl line.  I think the radio is not tuned on KK.
