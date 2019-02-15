@@ -1,0 +1,7 @@
+To display current setting:
+/sbin/uci get wireless.radio0.country
+
+To set it (to US, for example):
+/sbin/uci set wireless.radio0.country=US
+/sbin/uci commit
+reboot
