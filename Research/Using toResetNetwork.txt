@@ -1,0 +1,15 @@
+Restart Network Services
+If you are using the smart plug to restart your network, you have a little bit of a problem. Once the network restarts, your smart plug will lose its connection to the network. To fix that, you will need to create a script to perform a delayed network restart.
+
+You can create the script using the following command:
+
+#!/bin/sh
+
+sleep 120
+/sbin/ifdown wwan
+sleep 15
+/sbin/ifup wwan
+
+This will wait 2 minutes and restart the network services, this should give enough time for the network to power up and settle. You can extend this time as necessary.
+
+Finally, make the script executable:
