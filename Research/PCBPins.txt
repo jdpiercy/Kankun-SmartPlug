@@ -1,0 +1,16 @@
+What is the pins on WiFi PCB at bottom side ("J4" at the bottom face side of the PCB)? It's looks like:
+     - RX_P4
+     - RX_N4
+     - TX_P4
+     - TX_N4
+     - TX_P3
+     - TX_N3
+     - RX_P3
+     - RX_N3
+     - ? (ground?)
+     - ? (looks like AVDD20)
+     - USB_DM
+     - USB_PM
+
+2) What is the male (on the WiFi PCB and female on the "power" PCB) 6-pins? According to annotation on the power PCB, there are 3V3, GND, LED1, LED2 and (I guess) signal to relay. Maybe anybody knows it defenetely?
+
