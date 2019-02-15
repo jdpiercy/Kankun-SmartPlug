@@ -10,4 +10,5 @@ The manufacturer's software is buggy at best and uses Chinese servers to relay c
 <li>Konstantin Dondoshanskiy
 <li>lukeb-uk/kankun-setup
 <li>homedash/kankun-json
+<li>mattjoyce/kankun-json
 <li>0x00string/kankuncontroller
