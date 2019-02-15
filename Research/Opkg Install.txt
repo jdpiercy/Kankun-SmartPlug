@@ -22,3 +22,5 @@ then re-run opkg update
 
 Now you can install things with:
 opkg install {package name}
+
+remove opkg binary from /bin to save space, you can re-add it as needed
