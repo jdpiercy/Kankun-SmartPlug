@@ -7,8 +7,7 @@ The manufacturer's software is buggy at best and uses Chinese servers to relay c
 
 <b>Thanks:</b>
 
-<li>
-Konstantin Dondoshanskiy
-lukeb-uk/kankun-setup
-homedash/kankun-json
-</li>
+<li>Konstantin Dondoshanskiy
+<li>lukeb-uk/kankun-setup
+<li>homedash/kankun-json
+
