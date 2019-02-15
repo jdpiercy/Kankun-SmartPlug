@@ -16,3 +16,4 @@ The manufacturer's software is buggy at best and uses Chinese servers to relay c
 <li>Theb-1/KK1
 <li>Xuong Tong
 <li>Minas Dasygenis
+<li>Marco Trevino
