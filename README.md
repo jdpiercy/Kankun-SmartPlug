@@ -6,3 +6,5 @@ The manufacturer's software is buggy at best and uses Chinese servers to relay c
 <b>Todo:</b>
 
 <b>Thanks:</b>
+
+lukeb-uk/kankun-setup
