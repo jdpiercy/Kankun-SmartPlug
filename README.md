@@ -13,3 +13,4 @@ The manufacturer's software is buggy at best and uses Chinese servers to relay c
 <li>mattjoyce/kankun-json
 <li>0x00string/kankuncontroller
 <li>jdgordon/kankun-magictimer
+<li>Theb-1/KK1
