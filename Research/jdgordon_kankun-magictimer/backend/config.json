@@ -1,0 +1,35 @@
+{
+    "location": { "lat": "-37.81", "long": "144.96" },
+    "timers":
+    [
+        {
+            "addr": "00:15:61:ee:bb:d2",
+            "nickname": "Donkey",
+            "schedule": {
+                "Sun": [ {"$sunset - 120": "ON"}, {"$sunrise + 90": "OFF"}],
+                "Mon": [ {"$sunset - 120": "ON"}, {"$sunrise + 90": "OFF"}],
+                "Tue": [ {"$sunset - 120": "ON"}, {"$sunrise + 90": "OFF"}],
+                "Wed": [ {"$sunset - 120": "ON"}, {"$sunrise + 90": "OFF"}],
+                "Thu": [ {"$sunset - 120": "ON"}, {"$sunrise + 90": "OFF"}],
+                "Fri": [ {"$sunset - 120": "ON"}, {"$sunrise + 90": "OFF"}],
+                "Sat": [ {"$sunset - 120": "ON"}, {"$sunrise + 90": "OFF"}]
+                
+            }
+        },
+        {
+            "addr": "00:15:61:cc:85:e6",
+            "nickname": "Frog",
+            "schedule": {
+                "Sun": [ {"$sunset - 120": "ON"}, {"0800": "OFF"} ],
+                "Mon": [ {"$sunrise + 90": "OFF"}, {"0800": "OFF"} ]
+            }
+        },
+        {
+            "addr": "00:15:61:cc:81:71",
+            "nickname": "Llama",
+            "schedule": {
+                "Fri": [ {"1830": "ON"}, {"2030": "OFF"} ]
+            }
+        }
+    ]
+}

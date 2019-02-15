@@ -1,0 +1,26 @@
+<!doctype html>
+<title>Our Magic Timers!!!</title>
+<body>
+	<table>
+		<tr>
+			{% for addr, cfg in timers.iteritems() %}
+			<td>
+				<pre>Timer <b>{{ cfg.nickname}}</b> is currently <b>{{cfg.state}}</b></pre>
+				<pre>{{ cfg.get_next_change_text() }}</pre>
+				<form method="POST">
+					<input type="hidden" name="addr" value="{{addr}}">
+					<input type="radio" name="force" value="on" {{cfg.get_radioselect_text('on') }}>Force ON
+					<br>
+					<input type="radio" name="force" value="off" {{cfg.get_radioselect_text('off') }}>Force OFF
+					<br>
+					<input type="radio" name="force" value="auto" {{cfg.get_radioselect_text('auto') }}>Use timer
+					<br>
+					<input type="submit" value="Update">
+				</form>
+			</td>
+{% endfor %}
+
+		</tr>
+	</table>
+
+</body>
