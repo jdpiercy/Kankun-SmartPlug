@@ -1,0 +1,77 @@
+#!/bin/sh
+
+# Ludwell Frisbee
+# EXPERIMENTAL WARNING EXPERIMENTAL WARNING
+# YOUR KANKUN OR ANYTHING PLUGGED INTO IT MAY BE DAMAGED OR DESTROYED
+# USE AT YOUR OWN RISK NO WARRANTY IS PROVIDED
+
+# Kankun NoApp Restore Script Part 2 of 2
+
+# Connect PC to to local WiFi AP
+# Run this script after Kankun NoApp Restore Part 1
+# ssh kankun-ip-address
+
+# Variables
+VERSION=0.6
+
+echo
+echo "Kankun No-App Restore Part 2 of 2 Version $VERSION"
+echo
+
+# Now that we're connected to the Internet, update opkg
+opkg update
+
+# Install mosquitto-client-nossl
+opkg install mosquitto-client-nossl
+
+# Install nano
+opkg install nano
+
+# Install watchcat package
+#opkg install watchcat
+#/etc/uci-defaults/50-watchcat
+#uci set system.@watchcat[0].period=10m
+#uci commit system
+#/etc/init.d/watchcat enable
+
+# Update banner
+[ -f /etc/banner ] && [ ! -f /etc/banner.BACKUP ] && mv /etc/banner /etc/banner.BACKUP
+cat > /etc/banner << EOF
+  _____                     ______        __
+ |       |.---.---.---.|  |  |  |.--.|  |_
+ |   -   ||  _  |  -__|     ||  |  |  ||   _||   _|
+ |_______||   __|_____|__|__||________||__|  |____|
+          |__| W I R E L E S S   F R E E D O M
+ -----------------------------------------------------
+ BARRIER BREAKER (%C, %R)
+ -----------------------------------------------------
+  * 1/2 oz Galliano         Pour all ingredients into
+  * 4 oz cold Coffee        an irish coffee mug filled
+  * 1 1/2 oz Dark Rum       with crushed ice. Stir.
+  * 2 tsp. Creme de Cacao
+ -----------------------------------------------------
+EOF
+
+# Setup and enable crontab
+/etc/init.d/cron start
+/etc/init.d/cron enable
+mkdir -p /var/spool/cron
+crontab - << EOF
+# * * * * * /sbin/check_host 8.8.8.8 # Setup SmartPlug to toggle
+#* * * * * /bin/ping -c 1 -w 1 8.8.8.8 > /dev/null 2>&1
+#0-58/2 * * * * /bin/echo 1 >> /sys/class/leds/tp-link:blue:relay/brightness
+#1-59/2 * * * * /bin/echo 0 >> /sys/class/leds/tp-link:blue:relay/brightness
+EOF
+# Restart various init.d processes
+/etc/init.d/cron restart
+
+# Cleanup
+rm -f KankunNoAppRestore?of2.sh
+
+echo
+echo "Kankun NoApp Restore Part 2 of 2 end"
+echo
+
+# Sync and reboot
+sync
+reboot
