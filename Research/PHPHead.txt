@@ -1,0 +1,56 @@
+<html>
+ <head>
+  <title>Toggle Lamp</title>
+ </head>
+ <body>
+ <?php 
+	$k_ip = '192.168.45.55'; //Kankun switch IP address
+	//If it had the argument to turn off or on the light, the script does that. 
+	if (isset($_GET['a'])){
+		if ( $_GET['a'] == "on" ) $statusPage = file_get_contents('http://'. $k_ip . '/cgi-bin/relay.cgi?set=on');
+		else if ( $_GET['a'] == "off" ) $statusPage = file_get_contents('http://'. $k_ip . '/cgi-bin/relay.cgi?set=off');
+	}
+	
+	//this calls timer.php if the timer argument('t') was passed to the script. If 'cancel' is the value, then that
+	//deletes timer.txt, effectively cancelling the timer. 
+	if (isset($_GET['t'])){
+		$timer = $_GET['t'];
+		if ( $timer == "Cancel" ) unlink( 'C:\UniServer\www\MBLight\timer.txt' );
+		else if ( $timer > 0 ) pclose(popen('start /B C:\UniServer\usr\local\php\php.exe C:\UniServer\www\MBLight\timer.php '. $timer, "r")); 
+		sleep(1); //sleep for a second to give timer.php time to create the timer.txt file. The code further down in the script will need that, 
+				//otherwise it will display the form even though the timer would be set. 
+	}
+	else $timer = "";
+	
+	//Checks the status of the light, and displays off.jpg if the light is off, and on.jpg if it is on. 
+	$statusPage = file_get_contents('http://' . $k_ip . '/cgi-bin/relay.cgi?get=state');
+	if ( strpos($statusPage,'off') !== false ){  
+		?>	<p><a href="index.php?a=on"><span style='color:windowtext; text-decoration:none'><img border=0 width=229 height=393 id="Picture 2" src="off.jpg"></span></a></p> <?php
+	}
+	else if ( strpos($statusPage,'on') !== false ){ 
+		?>	<p><a href="index.php?a=off"><span style='color:windowtext; text-decoration:none'><img border=0 width=229 height=393 id="Picture 1" src="on.jpg"></span></a></p> <?php
+	} 
+		
+	//checks if timer.txt exists. And if it does, it outputs the amount of time left(according to the value in timer.txt)
+	//It makes the time left a hyperlink which cancels the timer if clicked. If timer.txt doesn't exist, then it just 
+	//outputs a form that allows you to set the timer. 
+	if (file_exists( 'C:\UniServer\www\MBLight\timer.txt' )){
+		$file_contents = fopen( 'C:\UniServer\www\MBLight\timer.txt', "r" );
+		$readTime = fgets($file_contents);
+		$timeLeft = gmdate("H:i:s", $readTime);
+		echo "<p><a href='index.php?t=Cancel'>".$timeLeft."<a/></p>";
+		fclose($file_contents);
+	}
+	else {
+	?>
+	<form action="index.php">
+		Enter Off Timer<br>
+		<input onClick="this.setSelectionRange(0, this.value.length)" type="number" name="t" value="5">
+		<br>
+		<input type="submit" value="Submit">
+	</form>
+	<?php
+	}
+ ?>
+ </body>
+</html>
