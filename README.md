@@ -18,3 +18,4 @@ The manufacturer's software is buggy at best and uses Chinese servers to relay c
 <li>Minas Dasygenis
 <li>Marco Trevino
 <li>Barry Hubbard
+  <li>Joe Sebastian
