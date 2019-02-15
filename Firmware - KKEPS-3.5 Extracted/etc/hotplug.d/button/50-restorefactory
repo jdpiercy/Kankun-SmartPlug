@@ -1,0 +1,39 @@
+#!/bin/sh
+
+system_config() {
+	config_get button "$1" button "reset"
+	config_get action "$1" action "pressed"
+	config_get timeout "$1" timeout "2"
+}
+
+config_load system
+config_foreach system_config restorefactory
+
+[ "$BUTTON" = "$button" ] && {
+
+	[ -f /tmp/run/restorefactory.pid ] && read PID < /tmp/run/restorefactory.pid && kill $PID && rm /tmp/run/restorefactory.pid && logger -p user.info -t "restorefactory" "restore to factory defaults aborted"
+
+	[ "$ACTION" = "$action" ] && {
+
+		if [ "$timeout" -gt 0 ]
+		then
+			sleep "$timeout" && firstboot && reboot &
+			echo $! > /tmp/run/restorefactory.pid
+			logger -p user.info -t "restorefactory" "restoring to factory defaults in $timeout seconds"
+		elif [ "$timeout" -eq 0 ]
+		then
+			firstboot && reboot &
+		else
+			logger -p user.info -t "restorefactory" "invalid timeout value ($timeout)"
+		fi
+	}
+} 
+
+        [ "$BUTTON" = "$button" ] && [ "$ACTION" = "$action" ] && {
+                SW=$(uci get system.@led[-1].default)
+                [ $SW == '0' ] && uci set system.@led[-1].default=1
+                [ $SW == '0' ] || uci set system.@led[-1].default=0
+                uci commit
+                /etc/init.d/led restart
+        }
+

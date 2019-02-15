@@ -1,0 +1,2 @@
+/etc/modules.d/50-ledtrig-netdev
+/lib/modules/3.10.26/ledtrig-netdev.ko

@@ -1,0 +1,8 @@
+Package: kmod-gpio-button-hotplug
+Version: 3.10.26-1
+Depends: kernel (=3.10.26-1-91ec754bdb524103593302179b7f593e)
+Source: package/kernel/gpio-button-hotplug
+Section: kernel
+Architecture: ar71xx
+Installed-Size: 4453
+Description:  Simple GPIO Button Hotplug driver

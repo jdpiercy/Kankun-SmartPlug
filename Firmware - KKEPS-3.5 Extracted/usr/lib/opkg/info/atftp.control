@@ -1,0 +1,8 @@
+Package: atftp
+Version: 0.7-1
+Depends: libc, libreadline, libncurses
+Source: feeds/packages/net/atftp
+Section: net
+Architecture: ar71xx
+Installed-Size: 16441
+Description:  TFTP client

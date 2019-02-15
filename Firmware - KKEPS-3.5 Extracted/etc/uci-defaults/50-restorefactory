@@ -1,0 +1,28 @@
+#!/bin/sh
+
+uci -q show system.@restorefactory[0] || {
+        uci add system restorefactory
+        uci set system.@restorefactory[0].button=reset
+        uci set system.@restorefactory[0].action=pressed
+        uci set system.@restorefactory[0].timeout=2
+        uci commit
+}
+
+uci -q show system.@led[0] || {
+        uci add system led
+        uci set system.@led[0].name=flashing
+        uci set system.@led[0].sysfs=tp-link:blue:config
+        uci set system.@led[0].trigger=timer
+        uci set system.@led[0].delayon=800
+        uci set system.@led[0].delayoff=800
+        uci commit
+}
+
+uci -q show system.@led[1] || {
+        uci add system led
+        uci set system.@led[1].name=Relay
+        uci set system.@led[1].sysfs=tp-link:blue:relay
+        uci set system.@led[1].trigger=none
+	uci set system.@led[1].default=0
+        uci commit
+}

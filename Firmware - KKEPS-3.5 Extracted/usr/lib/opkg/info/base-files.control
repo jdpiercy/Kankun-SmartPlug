@@ -1,0 +1,8 @@
+Package: base-files
+Version: 150-r39365
+Depends: libc, netifd, procd
+Source: package/base-files
+Section: base
+Architecture: ar71xx
+Installed-Size: 124828
+Description:  This package contains a base filesystem and system scripts for OpenWrt.

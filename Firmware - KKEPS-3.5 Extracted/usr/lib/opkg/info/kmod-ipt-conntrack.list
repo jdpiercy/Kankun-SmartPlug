@@ -1,0 +1,8 @@
+/lib/modules/3.10.26/xt_CT.ko
+/lib/modules/3.10.26/xt_state.ko
+/lib/modules/3.10.26/nf_conntrack_ipv4.ko
+/lib/modules/3.10.26/nf_conntrack.ko
+/lib/modules/3.10.26/xt_conntrack.ko
+/lib/modules/3.10.26/nf_defrag_ipv4.ko
+/etc/modules.d/ipt-conntrack
+/lib/modules/3.10.26/iptable_raw.ko

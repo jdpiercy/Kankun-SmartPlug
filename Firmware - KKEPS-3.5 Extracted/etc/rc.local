@@ -1,0 +1,9 @@
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+sleep 5
+/sbin/kkeps_on &
+/sbin/kkeps_off &
+/sbin/kkeps_seekwifi &
+/sbin/kkeps_reconect &
+
+exit 0

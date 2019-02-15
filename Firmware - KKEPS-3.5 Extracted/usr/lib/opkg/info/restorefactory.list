@@ -1,0 +1,2 @@
+/etc/uci-defaults/50-restorefactory
+/etc/hotplug.d/button/50-restorefactory
