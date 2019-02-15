@@ -1,0 +1,22 @@
+
+https://drive.google.com/open?id=0B41z3akiujVpS2JoUUdvWklrMEE
+drive.google.com - openwrt-15.05.1-ar71xx-generic-tl-wr703n-v1-squashfs-sysupgrade.bin - Google Drive
+
+cat /dev/mtd5 >/tmp/KK_backup.bin
+Download that file to your computer.
+
+That's it. You got the full backup of the firmware 
+
+To restore? Transfer it to /tmp in router.
+sysupgrade -v -n KKbackup.bin
+
+
+use the same procedure for openwrt image.
+verify the md5sum first
+
+one flash, follow the link below, remember you dont have luci
+
+https://wiki.openwrt.org/doc/howto/firstlogin
+openwrt-15.05.1-ar71xx-generic-tl-wr703n-v1-squashfs-sysupgrade.bin - Google Drive
+drive.google.com
+Jan 16, 
