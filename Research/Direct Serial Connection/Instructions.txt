@@ -1,0 +1,31 @@
+Marco Trevino
+
+So... Some time ago I posted here to get some help since I bricked my device while playing too much with opkg (https://goo.gl/bQTFzP), so thanks to the tips of Rafał Markiewicz and the Poly Zoaria's post about serial port usage in this nice smart plug (https://goo.gl/72A5Tc), I got mine unbricked!
+
+The process has not been hard, but since I only had a 5v serial adaptor (the Arduino MiniUSB https://www.arduino.cc/en/Main/MiniUSB), we needed to shift that to 3.3v (thanks to +Giulio Grechi for doing this and all the soldering, see http://electronics.stackexchange.com/a/97898 for more info).
+
+Once we got the serial connection (115200 8n1), I managed to enter in u-boot mode using the classic tpl sequence (write "tpl" as soon as U-Boot announces "Autobooting in 1 seconds").
+
+Now, the problems... This device has not an easily usable ethernet port (yeah, we might build one from the pad, but it's not convenient), so using tftp is not an easy option. Also, the provided u-boot doesn't support the loadb command, then there's no way to use kermit to transfer data via serial). Same story for the loady method.
+
+Thank God, there's still the raw mw option, so using a python script I found on openwrt forums (https://goo.gl/gB3t87) and that I've slightly modified, I've been able to write the firmware in memory and flash it.
+
+You can get the script from this gist: https://gist.github.com/3v1n0/02d095da98045523f014
+
+Here's the command (the serial copy takes almost an hour):
+  python uboot-write.py --write=kkeps-3.5.bin
+
+Then open your serial console (I just used screen):
+  # You can verify that the memory content is correct
+  # with md, you should see OpenWrt revision
+   #md  0x81000000 25
+  erase 0x9f020000 +0x3c0000
+  cp.b 0x81000000 0x9f020000 0x3c0000
+  bootm 9f020000
+
+And there you go!
+
+Solder Free:
+
+Used these so I didn't need to solder anything:
+http://www.aliexpress.com/item/M126-New-5-Pcs-Test-Clip-Mini-Grabber-SMD-IC-Hook-Probe-Jumper-5-Colors/1940806455.html
