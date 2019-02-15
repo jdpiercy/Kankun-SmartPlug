@@ -1,0 +1,19 @@
+#!/bin/sh
+# (C) 2014 Yahya Khaled, yaya.khaled@gmail.com
+#usage: ./check_host 192.168.1.22
+# If you want to pass no variable; change the IP address below
+# Copy the script to /bin/ and make it executable; you should
+# be able to call it from the crontab and set it as a schedual every 5 minutes or so
+
+HOST_IP=192.168.1.1
+
+if [[ -n "$1" ]]; then
+HOST_IP=$1;
+fi
+# I set ping to 10 packets with quite outpt. Then I matched for fixed pattern which indicates host is up and healthy
+HOST_IS_UP=$(ping $HOST_IP -c 10 -q | grep -w "0% packet loss");
+if [[ -n "$HOST_IS_UP" ]]; then
+echo 1 >> /sys/class/leds/tp-link:blue:relay/brightness;
+else
+echo 0 >> /sys/class/leds/tp-link:blue:relay/brightness;
+fi
