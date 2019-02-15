@@ -1,0 +1,16 @@
+Here's a list of files which change from v3.3 and 3.5
+/etc/offline.txt
+/etc/online.txt
+/lib/modules/3.10.26/ath.ko
+/lib/wifi/mac80211.sh
+/sbin/kkeps_on
+/usr/lib/opkg/info/base-files.control
+/usr/lib/opkg/info/kmod-ath9k-common.control
+/usr/lib/opkg/info/kmod-ath.control
+/usr/lib/opkg/info/kmod-cfg80211.control
+/usr/lib/opkg/info/kmod-gpio-button-hotplug.control
+/usr/lib/opkg/info/kmod-mac80211.control.
+/usr/lib/opkg/status
+
+I spent some time building various openwrt images and flashing KKs.
+KanKun have compiled some extra drives in the kernel, and I was not able to get the /sys/class/leds/tp-link:blue:relay/brightness to appear.
