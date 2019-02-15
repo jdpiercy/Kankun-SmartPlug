@@ -1,0 +1,36 @@
+Force the smart plug on at startup
+As a final note, I wanted to make sure that if the power ever went out, the smart plug would be forced on at startup. Typically, the smart plug should resume whichever state it was in prior to the power loss, but I wanted to force this. Additionally, I need the networking components to restart after the initial power up (once the network is established)
+
+In testing, I found that the restoring of the power state was the last thing done in startup, even after the rc.local was allowed to complete, so the work-around was a two step process:
+
+Create an executable script to run 30 seconds after launch
+Run the script at startup
+The Script
+
+First, create a scripts directory under the root user
+
+# mkdir /root/scripts
+Next, create the following file:
+
+# vi /root/scripts/power_on
+With the contents:
+
+#!/bin/sh
+
+sleep 30
+
+echo 1 > /sys/class/leds/tp-link:blue:relay/brightness
+/root/scripts/delayed_network_restart
+By forcing the script to sleep 30 seconds before starting, you will ensure that the smart plug has time to complete its initialization procedure and place the plug in whichever state it thinks in should be in. Also, we call the delayed_network_restart script that we created earlier, to run after the initial boot.
+
+Make it executable
+
+# chmod a+x /root/scripts/power_on
+Run the Script at startup
+
+Edit rc.local
+
+# vi /etc/rc.local
+Add the following line before the exit 0
+
+/root/scripts/power_on &
