@@ -1,0 +1,117 @@
+running out of disk space should not brick your device. Hold down the button (5 secs) and power up. The led light should blink very fast.
+Connect to the original access point and use the ssh/telnet/original user/password. Once you are in. Run the following commands
+
+
+firstboot
+mtd -r erase rootfs_data 
+Jan 16, 2017
+xuong tong's profile photo
+xuong tong
+The clicking of the relay suggests it not brick
+Jan 16, 2017
+Douglas Cooper's profile photo
+Douglas Cooper
+xuong tong. I tried this. The button on the front appeared non functional as it would not even respond to manual relay on/off commands. The serial output of the device stopped at:
+
+procd: - init complete -
+
+every time and would not continue to root console. At this point the python script has allowed me to re-flash the device but I have not tested yet.
+Jan 16, 2017
+Douglas Cooper's profile photo
+Douglas Cooper
+FWIW i did hit enter at this point and should have gotten a console but did not
+Jan 16, 2017
+xuong tong's profile photo
+xuong tong
+from my kk on openwrt 15.05.1
+
+[    0.520000] 0x000000000000-0x000000020000 : "u-boot"
+[    0.520000] 0x000000020000-0x00000013f5dc : "kernel"
+[    0.530000] 0x00000013f5dc-0x0000003f0000 : "rootfs"
+[    0.530000] mtd: device 2 (rootfs) set to be root filesystem
+[    0.540000] 1 squashfs-split partitions found on MTD device rootfs
+[    0.540000] 0x000000320000-0x0000003f0000 : "rootfs_data"
+[    0.550000] 0x0000003f0000-0x000000400000 : "art"
+[    0.550000] 0x000000020000-0x0000003f0000 : "firmware"
+[    0.590000] libphy: ag71xx_mdio: probed
+[    1.190000] ag71xx ag71xx.0: connected to PHY at ag71xx-mdio.1:04 [uid=004dd041, driver=Generic PHY]
+[    1.200000] eth0: Atheros AG71xx at 0xb9000000, irq 4, mode:MII
+[    1.200000] TCP: cubic registered
+[    1.200000] NET: Registered protocol family 17
+[    1.210000] bridge: automatic filtering via arp/ip/ip6tables has been deprecated. Update your scripts to load br_netfilter if you need this.
+[    1.220000] Bridge firewalling registered
+[    1.220000] 8021q: 802.1Q VLAN Support v1.8
+[    1.240000] VFS: Mounted root (squashfs filesystem) readonly on device 31:2.
+[    1.240000] Freeing unused kernel memory: 256K (80390000 - 803d0000)
+[    2.520000] init: Console is alive
+[    2.520000] init: - watchdog -
+[    4.110000] usbcore: registered new interface driver usbfs
+[    4.120000] usbcore: registered new interface driver hub
+[    4.120000] usbcore: registered new device driver usb
+[    4.130000] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    4.140000] ehci-platform: EHCI generic platform driver
+[    4.140000] ehci-platform ehci-platform: EHCI Host Controller
+[    4.150000] ehci-platform ehci-platform: new USB bus registered, assigned bus number 1
+[    4.160000] ehci-platform ehci-platform: irq 3, io mem 0x1b000000
+[    4.180000] ehci-platform ehci-platform: USB 2.0 started, EHCI 1.00
+[    4.180000] hub 1-0:1.0: USB hub found
+[    4.180000] hub 1-0:1.0: 1 port detected
+[    4.600000] init: - preinit -
+[    5.390000] random: procd urandom read with 8 bits of entropy available
+[    8.680000] jffs2: notice: (348) jffs2_build_xattr_subsystem: complete building xattr subsystem, 3 of xdatum (1 unchecked, 2 orphan) and 4 of xref (0 dead, 3 orphan) found.
+[    8.700000] mount_root: switching to jffs2 overlay
+[    8.760000] procd: - early -
+[    8.760000] procd: - watchdog -
+[    9.550000] procd: - ubus -
+[   10.560000] procd: - init -
+[   11.790000] NET: Registered protocol family 10
+[   11.810000] ip6_tables: (C) 2000-2006 Netfilter Core Team
+
+
+
+so you got to 10.56 secs. it seen the file system already. I still believe its not bricked
+hold down the button and power on, only release after the led flashes quickly
+Jan 16, 2017
+Douglas Cooper's profile photo
+Douglas Cooper
+Based on your output I would suspect the issue is not storage or memory, but rather some service I installed that was hanging. Once I put the device back together and retest I'll confirm if full functionality is restored. It may also be the case that the button is not tied to an interrupt which would explain the non-functional behavior. 
+Jan 16, 2017
+xuong tong's profile photo
+xuong tong
+Unless KK build their image without fail safe. hmm another reason why I did my own openwrt 15.05.1 image. 
+If you can get access to the device. run  below to clear out your packages/work
+
+firstboot
+mtd -r erase rootfs_data ﻿
+Jan 16, 2017
+xuong tong's profile photo
+xuong tong
+Try this
+Failsafe mode
+
+When the configuration no longer allows you to log in via any network connection (e.g. lost password), the OpenWrt failsafe mode can be entered via the single "Reset" button on the device. However, in contrast to the generic failsafe instructions, for the TL-WR703N you have to wait for ca. 10 (10-12) seconds before pushing the "Reset" button after powering on the device. If the button is pushed immediately after powering on, the single blue LED will start blinking, supposedly indicating some failsafe firmware recovery mody of the embedded bootloader (not yet discovered how to use it). In this mode, the OpenWrt failsafe is not being started. Instead, wait for slightly longer than 10 seconds and - as soon as the LED starts blinking for the first time after powering on the device, push the "Reset" button for ca. 1-2 seconds. Immediately afterwards, the LED will blink rapidly (multiple Hz) and OpenWrt will be in failsafe mode.
+- The above didn't work on a Ver 1.6 box running OpenWrt r33312. To get into failsafe mode, power up the device and wait until the LED starts flashing (about 2Hz). Once it starts flashing (within about 4 seconds) then quickly press the button. The LED will then flash much faster and the device will be in failsafe mode.
+Jan 16, 2017
+Douglas Cooper's profile photo
+Douglas Cooper
+xuong. Thanks for the detailed notes as I think it will be good to have as a reference. In my case i could not achieve a blinking blue led. It would be solid at boot and then go off completely. I feel like i tried every combination of wait periods while attempting to enter failsafe via the button. Having had this conversation i noticed that failsafe mode can also be achieved via serial using:
+
+Press the [f] key and hit [enter] to enter failsafe mode
+
+directly after:
+
+procd: - preinit - 
+
+I'm also thinking that prior to attempting a re flash, performing the following may have been beneficial:
+
+//validate image
+md  0x81000000 25
+
+//clean partition
+erase 0x9f020000 +0x3c0000
+cp.b 0x81000000 0x9f020000 0x3c0000
+bootm 9f020000
+Jan 16, 2017
+Matt Adlard (Matt)'s profile photo
+Matt Adlard (Matt)
+One of mine did this left unplugged for an hour, plugged in. Powered off pressed switch on front held and powered up. Left pressed for 15 seconds. Let go and just left it, seemed to reset its self.
