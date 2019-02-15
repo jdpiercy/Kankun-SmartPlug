@@ -1,5 +1,6 @@
-rm /sbin/kkeps_on
-rm /sbin/kkeps_off
-rm /sbin/kkeps_reconect  
+/sbin/kkeps_on
+/sbin/kkeps_off
+/sbin/kkeps_seekwifi
+/sbin/kkeps_reconect
 
 Write a script that kills the above processes, then sets their executable bit to non-executable (to prevent daemon from automatically re-starting them).  Run this to go unreachable / blackout.  
