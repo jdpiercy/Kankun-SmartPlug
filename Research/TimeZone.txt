@@ -1,3 +1,11 @@
+Actually settinfs come from /etc/config/system 
+
+edit them there!
+
+
+
+old info:
+
 edit 
 
 /etc/TZ
@@ -13,3 +21,4 @@ change lines 20-22
 	config_get timezone "$cfg" timezone 'UTC'
 	# echo "$timezone" > /tmp/TZ
 	echo CST+7 > /etc/TZ
+
