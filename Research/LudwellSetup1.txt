@@ -1,0 +1,101 @@
+#!/bin/sh
+
+# Kankun NoApp Restore Script Part 1 of 2 (as 0K_SP3)
+
+# Ludwell Frisbee
+# EXPERIMENTAL WARNING EXPERIMENTAL WARNING
+# YOUR KANKUN OR ANYTHING PLUGGED INTO IT MAY BE DAMAGED OR DESTROYED
+# USE AT YOUR OWN RISK NO WARRANTY IS PROVIDED
+
+# Variables
+VERSION=0.7
+MYTIMEZONE=your timezone
+MYPASSWORD=your password
+KKHOSTNAME=kankun01
+UCIEXPORT=Kankun-uci-export
+TFTPSERVER=192.168.10.208 # Confirm this is the IP address that Kankun assigned to your PC
+OPKG=opkg-rc3.tar.gz
+
+# INSTRUCTIONS
+# Factory reset Kankun by holding button >>4s
+# Wait until slow blink of blue LED (1/s)
+# Wait another 20s
+# Kankun will now be running as an access point with SSID = 0K_SP3 and IP address = 192.168.10.253
+# Connect your PC to the Kankun AP
+
+# Run WinSCP on PC and copy the following files to Kankun /root:
+#	.profile
+#	authorized_keys
+#	KankunNoAppRestore1of2.sh
+#	KankunNoAppRestore2of2.sh
+#	Kankun-uci-export
+#	login.sh
+#	mqtt_pub
+#	mqtt_relaymon
+#	mqtt_sub
+#	opkg-rc3.tar.gz
+#	rc.local
+#	telnet
+
+# ssh into Kankun AP (username: root; password: p9z34c)
+# source KankunNoAppRestore1of2.sh
+
+echo
+echo "Kankun No-App Restore Part 1 of 2 Version $VERSION"
+echo
+
+# Set timezone
+echo "$MYTIMEZONE" > /tmp/TZ
+date -k
+
+# Change passwd
+passwd << EOF
+$MYPASSWORD
+$MYPASSWORD
+EOF
+
+# Install opkg manually
+cd /root
+tar xz -C / -f $OPKG
+rm -f $OPKG
+
+# rc.local
+[ -f /etc/rc.local ] && mv /etc/rc.local /etc/rc.local.ORIGINAL
+mv rc.local /etc
+
+# telnet
+[ -f /etc/init.d/telnet ] && mv /etc/init.d/telnet /etc/init.d/telnet.ORIGINAL
+mv telnet /etc/init.d
+chmod 755 /etc/init.d/telnet
+
+# login.sh
+[ -f /etc/init.d/telnet ] && mv /bin/login.sh /bin/login.sh.ORIGINAL
+mv login.sh /bin
+chmod 755 /bin/login.sh
+
+# mqtt_sub, mqtt_pub, mqtt_relaymon
+mv mqtt_sub /usr/bin
+chmod 755 /usr/bin/mqtt_sub
+mv mqtt_pub /usr/bin
+chmod 755 /usr/bin/mqtt_pub
+mv mqtt_relaymon /usr/bin
+chmod 755 /usr/bin/mqtt_relaymon
+
+# authorized_keys
+mv authorized_keys /etc/dropbear
+chmod 600 /etc/dropbear/authorized_keys
+
+# Configure uci
+uci import < "$UCIEXPORT"
+uci set network.lan.hostname="$KKHOSTNAME"
+uci commit
+rm -f "$UCIEXPORT"
+
+echo "Kankun NoApp Restore Part 1 of 2 finished. After you type enter, Kankun will reboot."
+echo "Then connect your PC to your usual AP."
+echo "After the Kankun is running (20S after the blue LED starts blinking), ssh <Kankun IP address>"
+echo "Then: source /root/KankunNoAppRestore2of2.sh"
+read -p "Type enter to continue: "
+
+sync
+reboot
