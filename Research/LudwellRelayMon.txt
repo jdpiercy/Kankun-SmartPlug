@@ -1,0 +1,42 @@
+Below is my mqtt_relaymon. You should start with the following:
+
+https://github.com/Theb-1/KK1/blob/master/relayMon.sh
+
+Regards,
+L
+
+----------
+
+#!/bin/sh
+
+# mqtt_relaymon
+# Based on https://github.com/Theb-1/KK1/blob/master/relayMon.sh
+
+VERSION=0.1
+BROKER="broker address"
+PORT="broker port"
+USERNAME="your username on broker"
+PASSWORD="your password on broker"
+TOPIC="your topic"
+OPTION=""       # -r
+
+RELAY=/sys/class/leds/tp-link\:blue\:relay/brightness
+lastValue=`cat $RELAY`
+
+while true; do
+	newValue=`cat $RELAY`
+        if [ "$lastValue" != "$newValue" ]; then
+		# logger -p user.debug -t "rc.local" "Relay state change: $lastValue > $newValue"
+                if [ "$newValue" == "1" ]; then
+			# logger -p user.debug -t "rc.local" "Relay switched on"
+			/usr/bin/mosquitto_pub "$OPTION" -h "$BROKER" -p "$PORT" -u "$USERNAME" -P "$PASSWORD" -t "$TOPIC" -m "on"
+                elif [ "$newValue" == "0" ]; then
+			# logger -p user.debug -t "rc.local" "Relay switched off"
+			/usr/bin/mosquitto_pub "$OPTION" -h "$BROKER" -p "$PORT" -u "$USERNAME" -P "$PASSWORD" -t "$TOPIC" -m "off"
+                fi
+                lastValue=$newValue
+        fi
+        sleep 1
+done
+Aug 7, 2015
+4 plus 
