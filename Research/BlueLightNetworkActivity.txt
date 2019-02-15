@@ -1,0 +1,9 @@
+Instructions for making the blue light a blinky network traffic light
+ssh in and type the folowing
+
+uci set system.@led[0].name=wwan-link
+uci set system.@led[0].trigger=netdev
+uci set system.@led[0].dev=wlan0
+uci set system.@led[0].mode='link tx rx'
+uci commit system
+/etc/init.d/led start
