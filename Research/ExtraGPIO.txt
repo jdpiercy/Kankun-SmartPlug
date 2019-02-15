@@ -1,0 +1,20 @@
+pio0 is connected to resistor R188 (above the left side of the Atheros chip), which appears to be a pull-down to ground. I would guess the the three resistors to the right of that one (R194, R196, r198) are also tied to GPIO pins as they appear to come directly out of the Atheros chip and are similarly pulled to ground. I would suspect gpio1 or gpio13-17 based on their location to gpio0 and the chip pinout.
+
+The following script will register and poll gpio0 and toggle the relay when its changed. By applying 3v to the bottom of R188, gpio0 will go high. You can check the state of all registered GPIO's by running 'cat /sys/kernel/debug/gpio'.
+
+#!/bin/sh
+
+echo 0 > /sys/class/gpio/export
+echo in > /sys/class/gpio/gpio0/direction
+
+lastValue=`cat /sys/class/gpio/gpio0/value`
+
+while true; do
+        newValue=`cat /sys/class/gpio/gpio0/value`
+        if [ "$lastValue" != "$newValue" ]; then
+                echo State change: $lastValue \> $newValue
+                echo $((!`cat /sys/class/leds/tp-link\:blue\:relay/brightness`)) > /sys/class/leds/tp-link\:blue\:relay/brightness
+                lastValue=$newValue
+        fi
+        sleep 1
+done
