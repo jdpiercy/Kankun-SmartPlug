@@ -1,0 +1,94 @@
+How to Automatically restart network when connection lost
+So, what if you want the network to automatically restart if you sense a loss in connection. Let’s make some modifications to the file above.
+
+Doing so will involve a few steps:
+
+Write a script to detect if we have an internet connection
+If no connection is present, restart the network
+Add the script to the crontab scheduler to run on a schedule (for example, every 5 minutes)
+Write a script to detect an internet connection
+
+First, we need to choose a good reliable server to “ping” to test whether or not we have a connection. For this, I will use the google dns server located at 8.8.8.8, although you can choose any other known good server. Once concern is that as setup above, the smart plug does not have dns enabled, so we should ping by ip address, instead of host name.
+
+General Connection Detection
+
+A simple bash script for detecting whether or not we have a network connection looks like:
+
+#!/bin/bash
+SERVER=8.8.8.8
+
+ping -c 3 $SERVER > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+  echo "No connection found"
+else
+  echo "Connection found"
+fi
+The IP address of the server we will check a connection to is specified at the top. In this case, it is one of dns servers for google. I am assuming that if I cannot reach google’s dns server, it is a problem with my connection, not theirs. (I pay far less for my internet connection!)
+
+Basically, this script will execute a ping command, and returns a value of 0 when a ping is successful (as the return status of the command). The output of the ping command is discarded to /dev/null. The -c option specifies that 3 pings should be sent (in case there is a problem and one is lost).
+
+Modify the script to restart the network if no connection is present
+
+Now, using a combination of the scripts from before, we can create a new script that will run a test (once) and restart the network if no connection is found. In my case, it is stored in the /root/scripts folder. Create the file with the following command
+
+# vi /root/scripts/connection_check.sh
+Make the contents of the file:
+
+#!/bin/bash
+SERVER=8.8.8.8
+RELAY_CTRL=/sys/class/leds/tp-link:blue:relay/brightness
+
+ping -c 3 $SERVER > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+  echo 0 > $RELAY_CTRL
+  sleep 15
+  echo 1 > $RELAY_CTRL
+  /root/scripts/delayed_network_restart.sh
+fi
+And finally, make it executable with the command:
+
+# chmod a+x /root/scripts/connection_check.sh
+Add the script to crontab
+
+The final step is to have the script automatically run at set intervals. In my case, I have decided to check for an internet connection every 5 minutes. If the connection has gone away, it will reset the network.
+
+The following line needs added to root’s crontab:
+
+*/5 * * * * sh /root/scripts/connection_check.sh
+This will run /root/scripts/connection_check.sh every 5 minutes. You can edit the crontab with the following command:
+
+# crontab -e
+And add the above line, as you normally would using vi
+
+Ensure that cron is running on startup
+
+During testing, I noticed that cron does not appear to start correctly at startup. The easiest fix for this was to simply add the cron initialization to the rc.local file. If it is already running, this should not be a problem.
+
+Simply, modify the rc.local file using the following command:
+
+# vi /etc/rc.local
+And add the following line prior to the exit 0 command:
+
+/etc/init.d/cron restart
+This will restart the cron process once the system is up and running.
+
+The entire rc.local file will look like this:
+
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+sleep 5
+/sbin/kkeps_on &
+/sbin/kkeps_off &
+/sbin/kkeps_seekwifi &
+/sbin/kkeps_reconect &
+
+/root/scripts/power_on &
+
+/etc/init.d/cron restart
+
+exit 0
+That’s it. Once you have completed and tested these steps, you can plug your network components into this plug (likely using a power strip) Just make sure that the total amount of items plugged in to the smart plug do not exceed the 10A rating of the plug. Most networking components should be well within this range. And that is how you make a KanKun smart plug power cycle your network components.
+
+With the two scripts shown above, you should be able to either restart the smart plug on command, or have it automatically restart when it detects that the internet connection has been lost.
