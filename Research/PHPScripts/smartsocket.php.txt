@@ -1,0 +1,240 @@
+<?php
+//Script to enable remote control of Kankun KK-SP3 Smart Socket
+//By Minas Dasygenis
+//http://arch.icte.uowm.gr/mdasyg/mdmiscellaneous.php
+
+$version=004;
+
+//USAGE:
+//Register or Modify the state:
+//-----------------------------
+//(1)
+//Just visit the webpage: http://<myIP>/smartsocket.php  , fill the psk (password), the state (on/off) and the identifier.
+//The identifier is either the IP of the box (if known) like 192.168.0.11 , the MAC of the socket like 00:BB:CC:DD:EE:FF,
+//or the name of the socket, as was set in the shell script installed, like home2
+//
+//(2)
+//you can register or modify the state by issuing all the parameters in the URL as follow:
+//http://<myIP>/smartsocket.php?psk=mypassword&register&state=0&identifier=192.168.0.160
+//
+//Query the State 
+//---------------
+//The installed shell script checks every 5 minutes the following URL, which can also be 
+//visited manually, to check what is the state of that socket (0=off, 1=on).
+//http://<myIP>/smartsocket.php?psk=mypassword&ip=192.168.0.160
+
+
+//Where the state is stored. It must be inside a world writable directory.
+$mytmpdir=sys_get_temp_dir();
+
+$rfile=$mytmpdir."kankun.".get_current_user().".db";
+
+//Password of this webpage. Only numbers and latin letters (due to URL encoding issues)
+$psk="mypasswowrd";
+
+
+
+
+function showform()
+{
+global $rfile,$version;
+$myform = <<< EOM
+<html>
+<h1><a>Dasygenis Power Control Form (version: $version)</a></h1>
+		<form method="GET">
+		<ul>
+		<li>
+		<label>PSK (password of php file)<label>
+		<input id="psk" name="psk" type="text" maxlength="20" value=""/> 
+		</li>		
+
+		<li>
+		<label>State </label>
+		<span>
+		<input type="radio" name="state" value="0">0 (off)
+		<input type="radio" name="state" value="1">1 (on)
+		</span> 
+		</li>		
+
+		<li  >
+		<label>identifier (MAC or IP or NAME, e.g. 192.168.0.100 or 00:FF:AA:CC:FF:BB or HOME2 ) (no special chars, only latin, nymbers, dot (.) and up/down dot (:) </label>
+		<input id="identifier" name="identifier" type="text" maxlength="20" value=""/> 
+		</li>
+		</ul>
+		<input id="saveForm" class="button_text" type="submit" name="register" value="Submit" />
+		</form>	
+<p>Database file is [ $rfile ] on webserver [ $_SERVER[SERVER_NAME] ] </p>
+<h2> WebServer Script</h2>
+<a href="http://arch.icte.uowm.gr/mdasyg/misc/smartsocket.php.txt"> smartsocket.php </a>
+<h2> Device Scripts</h2>
+<a href="http://arch.icte.uowm.gr/mdasyg/misc/dasygenis_kankun_control.sh"> dasygenis_kankun_control.sh </a>
+<br/>
+<a href="http://arch.icte.uowm.gr/mdasyg/misc/relaycontrol.sh"> relaycontrol.sh </a>
+<br />
+<a href="http://arch.icte.uowm.gr/mdasyg/misc/watchdog.sh"> watchdog.sh </a>
+</html>
+
+
+EOM;
+
+echo $myform;
+
+return;
+}
+
+
+
+
+//If no password is entered, just show the form
+if ( ! isset($_REQUEST["psk"])) { showform();}
+
+//If password is not correct, just exit silently
+if ( $_REQUEST["psk"]!=$psk ) { die(); }
+
+
+// If this file does not exist, just create it with an empty line
+if( !  file_exists($rfile) )
+{
+if ( ! touch($rfile) )
+        {
+        print "File Does not exist and I was not able to create the db file";
+        }
+file_put_contents($rfile,"\n",FILE_APPEND | LOCK_EX );
+}
+
+//Secure and increase timestamp also this file. Only the user executing this php page can read this file
+touch($rfile);
+chmod($rfile,0700);
+
+
+
+// Lets register the data
+if ( isset($_REQUEST["register"]) and isset($_REQUEST["state"]) and isset($_REQUEST["identifier"])  )
+{
+if ( $_REQUEST["state"] == 1 ) 
+{$mystate=1;} else {$mystate=0;}
+
+// First, lets try to remove the line either with 1 or with 0 state
+$contents = file_get_contents($rfile);
+$line="@".$_REQUEST["identifier"]."@1\n";
+$contents = str_replace($line, '', $contents);
+$line="@".$_REQUEST["identifier"]."@0\n";
+$contents = str_replace($line, '', $contents);
+file_put_contents($rfile, $contents);
+
+$myline="@".$_REQUEST["identifier"]."@".$mystate."\n";
+if ( file_put_contents($rfile,$myline,FILE_APPEND | LOCK_EX ) ) 
+	{ 
+	echo "Command Processed succesfully.";
+	}
+	else
+	{	
+	echo "Command was not processed.";
+	}
+
+
+
+die();
+}
+
+
+
+
+
+
+
+
+
+
+// OK, lets process the request
+if ( isset($_REQUEST["ip"])  or isset($_REQUEST["mac"]) or isset($_REQUEST["name"]) )
+{
+
+//Try to locate the info for that device
+// get the file contents, assuming the file to be readable (and exist)
+$contents = file_get_contents($rfile);
+
+
+
+
+//Init value
+$notfound=1;
+
+
+if ( ! empty($_REQUEST["mac"]) )
+{
+//PartA: Search for MAC
+$searchfor=$_REQUEST["mac"];
+
+$pattern = preg_quote($searchfor, '/');
+// finalise the regular expression, matching the whole line
+$pattern = "/^.*$@pattern@.*\$/m";
+if(preg_match_all($pattern, $contents, $matches))
+	{
+	//OK found a match
+	$myline=$matches[0];
+	$mystatus=explode("@",$myline[0]);
+	echo $mystatus[2];
+	$notfound==0;
+	}
+else
+	{
+	//nothing found...sorry
+	$notfound==1;
+	}
+
+}
+
+
+
+
+if ( ! empty($_REQUEST["ip"]) and $notfound==1 )
+{
+	//We did not find a MAC, lets try to search for IP
+	$searchfor=$_REQUEST["ip"];
+	$pattern = preg_quote($searchfor, '/');
+	// finalise the regular expression, matching the whole line
+	$pattern = "/^.*$@pattern@.*\$/m";
+	if(preg_match_all($pattern, $contents, $matches))
+		{
+         	//OK found a match
+		$myline=$matches[0];
+		$mystatus=explode("@",$myline[0]);
+		echo $mystatus[2];
+		$notfound==0;
+		}//end if
+	else
+		{
+		//nothing found...sorry
+		$notfound==1;
+		}
+}// end if ip
+
+
+
+if ( ! empty($_REQUEST["name"]) and $notfound==1 )
+{
+	//We did not find a MAC, lets try to search for IP
+	$searchfor=$_REQUEST["name"];
+	$pattern = preg_quote($searchfor, '/');
+	// finalise the regular expression, matching the whole line
+	$pattern = "/^.*@$pattern@.*\$/m";
+	if(preg_match_all($pattern, $contents, $matches))
+		{
+         	//OK found a match
+		$myline=$matches[0];
+		$mystatus=explode("@",$myline[0]);
+		echo $mystatus[2];
+		}//end if
+}// end if ip
+
+
+
+
+
+
+
+
+}//end request process
+
+?>
